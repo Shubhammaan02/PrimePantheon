@@ -8,12 +8,17 @@ import ErrorHandler from "../utils/utility-class.js";
 
 export const myOrders = TryCatch(async (req, res, next) => {
     const { id: user } = req.query;
+
+    if (typeof user !== 'string') {
+      return res.status(400).json({ success: false, message: 'User ID is missing or invalid' });
+    }
   
     const key = `my-orders-${user}`;
     let orders = [];
   
-    if (myCache.has(key)) orders = JSON.parse(myCache.get(key) as string);
-    else {
+    if (myCache.has(key)) {
+      orders = JSON.parse(myCache.get(key) as string);
+    } else {
       orders = await Order.find({ user });
       myCache.set(key, JSON.stringify(orders));
     }
