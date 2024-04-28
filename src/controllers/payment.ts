@@ -34,7 +34,11 @@ export const newCoupon = TryCatch(async (req, res, next) => {
 });
 
 export const applyDiscount = TryCatch(async (req, res, next) => {
-  const { coupon } = req.query;
+  const coupon: string | undefined = req.query.coupon as string;
+
+  if (!coupon) {
+    return next(new ErrorHandler("Coupon code is missing 🥴", 400));
+  }
 
   const discount = await Coupon.findOne({ code: coupon });
 
